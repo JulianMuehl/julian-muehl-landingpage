@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.julianmuehl.de/sitemap.xml
+Sitemap: https://julianmuehl.de/sitemap.xml
