@@ -2,6 +2,25 @@
 
 Alle nennenswerten Änderungen an dieser Website werden hier festgehalten.
 
+## [1.4.0] – 2026-07-15
+
+### Veröffentlicht
+- Projekt in einem lokalen Git-Repository versioniert und auf GitHub
+  veröffentlicht: `github.com/JulianMuehl/julian-muehl-landingpage`
+  (öffentlich, über GitHub Desktop).
+- Mit Vercel verbunden, automatisches Deployment bei jedem Push auf `main`.
+- Domain `julianmuehl.de` (IONOS) auf Vercel umgestellt:
+  - A-Record `@` → `216.198.79.1`
+  - CNAME `www` → `beae11a7ff692427.vercel-dns-017.com.`
+  - `julianmuehl.de` als Production-Domain, `www.julianmuehl.de` als
+    308-Redirect darauf
+  - HTTPS automatisch über Let's Encrypt aktiviert
+  - Mail-Einträge (MX/SPF/DMARC) bei IONOS unverändert geprüft
+- Canonical-URL, Open-Graph-URLs und Sitemap von `www.julianmuehl.de` auf
+  die Apex-Domain `julianmuehl.de` korrigiert (passend zur neuen
+  Production-Domain).
+- Carrd-Domain-Verknüpfung entfernt; Carrd-Seite selbst bleibt bestehen.
+
 ## [1.3.0] – 2026-07-15
 
 ### Geändert (Hervorhebung Name/Untertitel, Icons, Footer-Logo)

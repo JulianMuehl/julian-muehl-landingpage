@@ -3,6 +3,13 @@
 Eine schlanke, premium wirkende Ein-Seiten-Website (HTML/CSS/JS, ohne
 Frameworks) als hochwertiger Ersatz für Linktree/Carrd.
 
+**🔴 Live unter:** `https://julianmuehl.de`
+**Quellcode:** `https://github.com/JulianMuehl/julian-muehl-landingpage`
+**Hosting:** Vercel (deployt automatisch bei jedem Push auf `main`)
+
+Wie du Änderungen veröffentlichst, künftige Deployments funktionieren und
+wie der komplette Hosting-Aufbau aussieht, steht in `DEPLOYMENT.md`.
+
 Diese Anleitung ist bewusst für Einsteiger geschrieben. Du brauchst keine
 Programmierkenntnisse, um die wichtigsten Dinge (Texte, Farben, Links,
 Bilder) selbst zu ändern.
