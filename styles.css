@@ -97,7 +97,7 @@
      aus der Vektor-Vorlage übernommen), damit beide Zeilen bei jeder
      Bildschirmgröße im selben Verhältnis zueinander skalieren. */
   --brand-title-width: clamp(260px, 64vw, 480px);
-  --brand-subtitle-width: clamp(236px, 58vw, 435px);
+  --brand-subtitle-width: clamp(233px, 57.5vw, 431px);
 
   /* Fidano-Logo im Footer: ca. 75 % der Button-Breite (600px) */
   --footer-logo-width: clamp(210px, 74vw, 450px);
@@ -218,6 +218,10 @@ ul {
   display: block;
   width: 100%;
   height: auto;
+  /* Verhindert, dass Browser den (per Vorlage bereits mit Sicherheitsrand
+     versehenen) Schriftzug oder seinen Schlagschatten an der SVG-eigenen
+     Standard-Overflow-Grenze abschneiden. */
+  overflow: visible;
 }
 
 /* --------------------------------------------------------------------------
