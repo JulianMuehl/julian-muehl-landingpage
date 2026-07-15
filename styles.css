@@ -92,11 +92,12 @@
   --social-icon-size: 34px;
 
   /* Marken-Kopf (Titel/Untertitel) als Vektorgrafik, siehe Abschnitt 3.
-     Die Breiten sind proportional zueinander (Verhältnis exakt aus der
-     Vektor-Vorlage übernommen), damit beide Zeilen bei jeder
+     Titel bewusst kompakter/schmaler als zuvor (Baskerville Regular statt
+     SemiBold). Die Breiten sind proportional zueinander (Verhältnis exakt
+     aus der Vektor-Vorlage übernommen), damit beide Zeilen bei jeder
      Bildschirmgröße im selben Verhältnis zueinander skalieren. */
-  --brand-title-width: clamp(300px, 74vw, 560px);
-  --brand-subtitle-width: clamp(268px, 66.1vw, 500px);
+  --brand-title-width: clamp(260px, 64vw, 480px);
+  --brand-subtitle-width: clamp(236px, 58vw, 435px);
 
   /* Fidano-Logo im Footer: ca. 75 % der Button-Breite (600px) */
   --footer-logo-width: clamp(210px, 74vw, 450px);
@@ -154,8 +155,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Der weiche, markante Hintergrundverlauf – auf der gesamten Seite */
-  background: linear-gradient(180deg, var(--color-bg-top) 0%, var(--color-bg-bottom) 100%);
+  /* Der weiche, markante Hintergrundverlauf – auf der gesamten Seite.
+     Diagonal (135deg = oben-links nach unten-rechts) statt streng
+     vertikal, für eine lockerere, dynamischere Wirkung. Farbwerte
+     unverändert (hell oben/links -> dunkel unten/rechts). */
+  background: linear-gradient(135deg, var(--color-bg-top) 0%, var(--color-bg-bottom) 100%);
   background-attachment: fixed;
 }
 
