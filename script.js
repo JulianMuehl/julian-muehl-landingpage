@@ -65,10 +65,37 @@
     }, delay);
   }
 
+  /**
+   * Leichtgewichtiges Klick-Tracking: meldet Klicks auf CTAs, Kontakt- und
+   * Social-Links als Custom-Event an Vercel Web Analytics (window.va),
+   * sofern Analytics im Vercel-Projekt aktiviert ist. Ist es nicht aktiv,
+   * passiert schlicht nichts — keine Cookies, keine externen Anfragen.
+   */
+  function initClickTracking() {
+    document.addEventListener('click', function (event) {
+      var el = event.target.closest(
+        '.link-button, .social-link, .footer-logo-link'
+      );
+      if (!el) return;
+
+      var titleEl = el.querySelector('.link-button__title');
+      var label =
+        (titleEl && titleEl.textContent.trim()) ||
+        el.getAttribute('aria-label') ||
+        el.getAttribute('href') ||
+        'link';
+
+      if (typeof window.va === 'function') {
+        window.va('event', { name: 'cta_click', label: label });
+      }
+    });
+  }
+
   function init() {
     revealHeader();
     var buttonCount = revealButtons();
     revealSocialIcons(buttonCount);
+    initClickTracking();
   }
 
   if (document.readyState === 'loading') {
