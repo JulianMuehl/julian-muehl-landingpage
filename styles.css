@@ -714,3 +714,12 @@ ul {
   color: var(--color-button);
   text-decoration: underline;
 }
+
+/* Rechtslinks am Fuss einer Rechtstext-Seite: linksbuendig, dezent abgesetzt. */
+.legal .legal-links {
+  justify-content: flex-start;
+  gap: var(--spacing-md);
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(17, 26, 50, 0.12);
+}
