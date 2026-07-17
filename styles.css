@@ -102,10 +102,11 @@
   /* Fidano-Logo im Footer: ca. 75 % der Button-Breite (600px) */
   --footer-logo-width: clamp(210px, 74vw, 450px);
 
-  /* Rundes Hero-Portrait ueber dem Namen. Bewusst kompakt gehalten, damit
-     der erste Button auf dem iPhone schnell erreichbar bleibt; auf groesseren
-     Screens gewinnt es etwas mehr Praesenz (132px mobil -> 176px Desktop). */
-  --portrait-size: clamp(132px, 32vw, 176px);
+  /* Rundes Hero-Portrait ueber dem Namen. Etwas groesser als zuvor (wirkte
+     vorher zu klein), aber bewusst schmaler als der Namenszug darunter, damit
+     es die Titelbreite nicht erreicht. Bleibt kompakt genug, dass der erste
+     Button auf dem iPhone schnell erreichbar ist (176px mobil -> 252px Desktop). */
+  --portrait-size: clamp(176px, 48vw, 224px);
 
   /* ---- Bewegung / Timing ---- */
   --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
@@ -295,10 +296,10 @@ ul {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Fokus auf das Gesicht (leicht oberhalb der Mitte), damit im runden
-     Ausschnitt Kopf und Schultern vorteilhaft sitzen — kein unguenstiger
-     Crop, keine Verzerrung. */
-  object-position: 50% 20%;
+  /* Das Bild ist bereits quadratisch und fertig gerahmt (Kopf zentriert,
+     Haende bewusst weggeschnitten), daher zentriert einsetzen — kein
+     unguenstiger Crop, keine Verzerrung. */
+  object-position: 50% 50%;
 }
 
 /* ---- Buttons (Link-Liste) ---- */
@@ -527,9 +528,10 @@ ul {
   }
 
   /* Auf grossen Screens darf das Portrait etwas mehr Praesenz haben
-     (nie kleiner als der mobile Maximalwert von 176px). */
+     (nie kleiner als der mobile Maximalwert von 224px), bleibt aber klar
+     schmaler als der Namenszug. */
   :root {
-    --portrait-size: clamp(176px, 15vw, 200px);
+    --portrait-size: clamp(224px, 18vw, 252px);
   }
 }
 
