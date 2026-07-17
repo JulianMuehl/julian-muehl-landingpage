@@ -532,6 +532,25 @@ ul {
      schmaler als der Namenszug. */
   :root {
     --portrait-size: clamp(224px, 18vw, 252px);
+
+    /* Breiterer Button-/Content-Bereich ab Desktop: im breiten Fenster
+       wirkten die Buttons zu schmal (wie in der Mobilansicht). Der Bereich
+       waechst dezent mit der Fensterbreite und bleibt klar begrenzt, damit
+       die Buttons ruhig und gut lesbar bleiben. Mobil/Tablet unveraendert. */
+    --content-max-width: clamp(680px, 56vw, 820px);
+    --button-max-width: clamp(640px, 53vw, 760px);
+  }
+
+  /* Der zentrierte Flex-Container (.container, align-items: center) laesst
+     seine Kinder normalerweise auf Inhaltsbreite schrumpfen — dadurch waren
+     die Buttons auf dem Desktop nur so breit wie ihr Text (also gefuehlt so
+     schmal wie in der Mobilansicht). Hier bekommt die Button-Liste eine
+     definierte Breite, damit die Buttons den breiteren Desktop-Raum nutzen.
+     Mobil/Tablet bleibt unveraendert (dort ist der Container ohnehin schmaler
+     als diese Breite). */
+  .link-list {
+    width: var(--button-max-width);
+    max-width: 100%;
   }
 }
 
