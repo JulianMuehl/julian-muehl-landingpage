@@ -453,7 +453,9 @@ ul {
 .site-footer {
   width: 100%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
   padding-bottom: var(--spacing-2xl);
 }
 
@@ -595,4 +597,120 @@ ul {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* --------------------------------------------------------------------------
+   9. RECHTSTEXTE (Impressum / Datenschutz)
+   Eigenstaendige, gut lesbare Textseiten auf dem Marken-Verlauf: der Inhalt
+   liegt auf einer ruhigen, hellen „Papier"-Karte, damit langer Fliesstext
+   auch ueber dem dunkleren Verlaufsende klar lesbar bleibt.
+   -------------------------------------------------------------------------- */
+.legal-wrap {
+  width: 100%;
+  padding-inline: var(--spacing-md);
+}
+
+.legal {
+  width: 100%;
+  max-width: 780px;
+  margin: clamp(2.5rem, 7vh, 5rem) auto clamp(3rem, 8vh, 6rem);
+  padding: clamp(1.75rem, 4vw, 3rem);
+  background: rgba(250, 246, 240, 0.94);
+  border: 1px solid rgba(17, 26, 50, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 20px 50px -24px rgba(17, 26, 50, 0.4);
+}
+
+.legal-back {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: rgba(17, 26, 50, 0.75);
+  text-decoration: none;
+}
+
+.legal-back:hover,
+.legal-back:focus-visible {
+  color: var(--color-button);
+  text-decoration: underline;
+}
+
+.legal h1 {
+  font-family: 'Baskerville', Georgia, 'Times New Roman', serif;
+  font-weight: 600;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  line-height: 1.15;
+  color: var(--color-button);
+  margin-bottom: 1.5rem;
+}
+
+.legal h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-button);
+}
+
+.legal h2.optional {
+  color: rgba(17, 26, 50, 0.6);
+}
+
+.legal p,
+.legal address,
+.legal li {
+  line-height: 1.7;
+  font-size: 1rem;
+  color: rgba(17, 17, 17, 0.86);
+}
+
+.legal address {
+  font-style: normal;
+}
+
+.legal a {
+  color: var(--color-button);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.legal .optional em,
+.legal .legal-note {
+  color: rgba(17, 17, 17, 0.58);
+  font-size: 0.92rem;
+}
+
+.legal-note {
+  margin-top: 2rem;
+}
+
+/* Platzhalter deutlich markieren (vor dem Livegang ausfuellen/entfernen). */
+.legal .tbd {
+  background: rgba(168, 101, 76, 0.16);
+  color: #7a4632;
+  padding: 0.05em 0.4em;
+  border-radius: 5px;
+  font-style: normal;
+}
+
+/* Dezente Rechtslinks im Footer der Startseite. */
+.legal-links {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.legal-links a {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  color: rgba(17, 26, 50, 0.7);
+  text-decoration: none;
+}
+
+.legal-links a:hover,
+.legal-links a:focus-visible {
+  color: var(--color-button);
+  text-decoration: underline;
 }
