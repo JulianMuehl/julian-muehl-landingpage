@@ -102,6 +102,11 @@
   /* Fidano-Logo im Footer: ca. 75 % der Button-Breite (600px) */
   --footer-logo-width: clamp(210px, 74vw, 450px);
 
+  /* Rundes Hero-Portrait ueber dem Namen. Bewusst kompakt gehalten, damit
+     der erste Button auf dem iPhone schnell erreichbar bleibt; auf groesseren
+     Screens gewinnt es etwas mehr Praesenz (132px mobil -> 176px Desktop). */
+  --portrait-size: clamp(132px, 32vw, 176px);
+
   /* ---- Bewegung / Timing ---- */
   --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
   --transition-fast: 200ms;
@@ -253,11 +258,47 @@ ul {
 .site-header {
   width: 100%;
   text-align: center;
-  padding-top: clamp(var(--spacing-2xl), 12vh, 8rem);
+  /* Etwas reduziert gegenueber der Version ohne Portrait: das runde
+     Hero-Bild sitzt jetzt ganz oben und uebernimmt den optischen Anker,
+     daher braucht es darueber weniger Leerraum. Haelt zugleich den ersten
+     CTA auf dem iPhone in gut erreichbarer Naehe. */
+  padding-top: clamp(3.25rem, 9vh, 6rem);
   /* Großzügiger Abstand zum ersten Button, damit der Kopfbereich
-     (Titel + Untertitel) klar für sich steht, statt an den Button-Stack
-     heranzurücken. */
+     (Portrait + Titel + Untertitel) klar für sich steht, statt an den
+     Button-Stack heranzurücken. */
   padding-bottom: var(--spacing-2xl);
+}
+
+/* ---- Portrait (rundes Hero-Bild ueber dem Namen) ---- */
+.portrait {
+  width: var(--portrait-size);
+  height: var(--portrait-size);
+  margin-inline: auto;
+  /* Abstand zum Namen: kompakter als der Kopfbereich-Abstand insgesamt,
+     damit Portrait und Name als eine Einheit wirken. */
+  margin-bottom: var(--spacing-lg);
+  border-radius: 50%;
+  overflow: hidden;
+  /* Weicher, tiefliegender Schatten in der Marken-Marineblau-Familie
+     (gleiche Sprache wie --shadow-button) plus eine hauchduenne, helle
+     Kontur, die das Portrait dezent vom Verlauf abhebt — kein harter
+     Rahmen, kein Glassmorphism. */
+  box-shadow:
+    0 18px 40px -14px rgba(17, 26, 50, 0.45),
+    0 4px 12px -6px rgba(17, 26, 50, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.45);
+  /* Dezente Grundflaeche, waehrend das Bild laedt (kein harter Sprung). */
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+.portrait__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Fokus auf das Gesicht (leicht oberhalb der Mitte), damit im runden
+     Ausschnitt Kopf und Schultern vorteilhaft sitzen — kein unguenstiger
+     Crop, keine Verzerrung. */
+  object-position: 50% 20%;
 }
 
 /* ---- Buttons (Link-Liste) ---- */
@@ -480,7 +521,15 @@ ul {
 /* Desktop */
 @media (min-width: 1024px) {
   .site-header {
-    padding-top: clamp(6rem, 14vh, 9rem);
+    /* Proportional zur reduzierten Basis (siehe Kommentar am .site-header):
+       etwas mehr Luft als auf Mobile, aber weniger als vor dem Portrait. */
+    padding-top: clamp(4rem, 10vh, 7rem);
+  }
+
+  /* Auf grossen Screens darf das Portrait etwas mehr Praesenz haben
+     (nie kleiner als der mobile Maximalwert von 176px). */
+  :root {
+    --portrait-size: clamp(176px, 15vw, 200px);
   }
 }
 
