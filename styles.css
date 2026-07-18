@@ -329,11 +329,16 @@ ul {
    wird. Alle Maße bleiben identisch zu den übrigen Buttons. */
 .link-button.link-button--primary {
   background-color: var(--color-button-primary);
+  /* Etwas kräftigerer, kupfergetönter Schatten: der Primär-CTA "schwebt"
+     minimal stärker als die übrigen Buttons und zieht so den Blick. */
+  box-shadow: 0 12px 28px -8px rgba(158, 91, 65, 0.5);
 }
 
 .link-button.link-button--primary:hover,
 .link-button.link-button--primary:focus-visible {
   background-color: var(--color-button-primary-hover);
+  box-shadow: 0 20px 44px -10px rgba(158, 91, 65, 0.6);
+  transform: scale(1.022);
 }
 
 .link-button--primary .link-button__eyebrow {
@@ -789,4 +794,68 @@ ul {
   margin-top: 2.5rem;
   padding-top: 1.5rem;
   border-top: 1px solid rgba(17, 26, 50, 0.12);
+}
+
+/* --------------------------------------------------------------------------
+   10. 404-SEITE
+   Ruhige, mittige Fehlerseite im Marken-Look mit klarem Weg zurück.
+   -------------------------------------------------------------------------- */
+.notfound {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--spacing-2xl) var(--spacing-md);
+}
+
+.notfound__code {
+  font-family: 'Baskerville', Georgia, 'Times New Roman', serif;
+  font-weight: 600;
+  font-size: clamp(4rem, 16vw, 7rem);
+  line-height: 1;
+  color: var(--color-button-primary);
+  filter: drop-shadow(0 2px 5px rgba(17, 17, 17, 0.12));
+}
+
+.notfound__title {
+  font-family: 'Baskerville', Georgia, 'Times New Roman', serif;
+  font-weight: 600;
+  font-size: clamp(1.5rem, 5vw, 2.25rem);
+  color: var(--color-text);
+  margin-top: var(--spacing-sm);
+}
+
+.notfound__text {
+  max-width: 30rem;
+  margin: var(--spacing-sm) auto var(--spacing-lg);
+  color: rgba(17, 17, 17, 0.7);
+  line-height: 1.6;
+}
+
+.notfound__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 64px;
+  padding: 0 var(--spacing-lg);
+  background-color: var(--color-button-primary);
+  color: var(--color-button-text);
+  border-radius: var(--radius);
+  font-family: var(--font-button);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 12px 28px -8px rgba(158, 91, 65, 0.5);
+  transition:
+    transform var(--transition-base) var(--ease-premium),
+    box-shadow var(--transition-base) var(--ease-premium),
+    background-color var(--transition-base) var(--ease-premium);
+}
+
+.notfound__cta:hover,
+.notfound__cta:focus-visible {
+  background-color: var(--color-button-primary-hover);
+  box-shadow: 0 20px 44px -10px rgba(158, 91, 65, 0.6);
+  transform: scale(1.022);
 }
