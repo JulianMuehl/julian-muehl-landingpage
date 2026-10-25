@@ -263,3 +263,42 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 }
 .process .inline-body p{font-size:15px;line-height:1.85;max-width:70ch;opacity:1;grid-column:auto}
 @media(max-width:1100px){.process .inline-body p{font-size:14px}}
+
+/* Magnus movement: original logo geometry, 6.6s resonance and a 4.1s glint. */
+header.header.wrap{flex-wrap:nowrap;min-height:100px;padding-block:10px;gap:24px;position:relative;z-index:8}
+header.header .brand{position:relative;flex:0 0 72px;width:72px;height:72px}
+header.header .brand .header-emblem{position:relative;display:grid;place-items:center;isolation:isolate;width:72px;height:72px;font-size:0}
+header.header .brand .header-emblem img{position:relative;z-index:1;width:47px;height:59px;content:normal}
+.header-emblem::before,.header-emblem::after{content:"";position:absolute;pointer-events:none;z-index:-1;width:54px;height:54px;left:9px;top:9px;border-radius:50%;background:radial-gradient(circle,transparent 30%,#BFD6EA33 47%,#6E233FA6 59%,#4A182840 66%,transparent 74%);filter:blur(3px);opacity:0;animation:jm-header-resonance 6.6s ease-out infinite}
+.header-emblem::after{animation-delay:-3.3s}
+.header-emblem .brand-glint{position:absolute;z-index:2;inset:0;pointer-events:none;-webkit-mask:url(assets/jm-light.svg) center/47px 59px no-repeat;mask:url(assets/jm-light.svg) center/47px 59px no-repeat;background:linear-gradient(112deg,#F2E8DE 25%,#BFD6EA 38%,#EDF7FF 45%,#BFD6EA 52%,#F2E8DE 66%);background-size:400% 100%;opacity:0;animation:jm-header-glint 6.6s ease-in-out infinite}
+@keyframes jm-header-resonance{0%{transform:scale(.5);opacity:0}24%{opacity:.85}85%,100%{transform:scale(2.2);opacity:0}}
+@keyframes jm-header-glint{0%{background-position:100% 0;opacity:0}5%{opacity:1}62%{background-position:0% 0;opacity:1}72%,100%{background-position:0% 0;opacity:0}}
+header.header nav{display:flex;align-items:center;margin-left:auto;gap:0;min-width:0}
+header.header .menu,header.header .menu.open{display:flex;position:static;flex-direction:row;align-items:center;gap:26px;width:auto;max-width:none;padding:0;border:0;background:none;box-shadow:none}
+header.header .menu a{display:block;min-height:44px;padding:12px 0;font-size:13px;white-space:nowrap;border:0;border-radius:0;background:none}
+header.header .menu a.active:not(.nav-contact){background:none;color:var(--blue)}
+header.header .menu a.active:not(.nav-contact)::after{width:100%;left:0;right:0;bottom:4px;height:1px;background:var(--blue)}
+header.header .menu-toggle{display:none}
+@media(max-width:1100px){
+ header.header.wrap{min-height:88px;gap:16px;padding-block:8px;flex-wrap:nowrap}
+ header.header nav{display:flex}
+ header.header .menu-toggle{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid #ead9c955;border-radius:50%;background:transparent;color:var(--cashmere)}
+ header.header .menu,header.header .menu.open{position:absolute;top:calc(100% - 1px);left:20px;right:20px;width:auto;max-width:none;flex-direction:column;align-items:stretch;gap:0;padding:10px 20px 14px;border:1px solid #ead9c940;border-radius:0 0 12px 12px;background:var(--wine);box-shadow:0 16px 28px #1a121424}
+ header.header .menu{display:none}
+ header.header .menu.open{display:flex}
+ header.header .menu a{display:flex;align-items:center;justify-content:flex-start;min-height:46px;padding:12px 0;font-size:14px;text-align:left;border-bottom:1px solid #ead9c91f}
+ header.header .menu a:last-child{border-bottom:0}
+ header.header .menu a.active:not(.nav-contact)::after{display:none}
+}
+/* Entrance plays once per page load; no cursor, no text loop or layout shift. */
+.home-page .hero-word{display:inline-block;padding-block:.12em;margin-block:-.12em;animation:jm-hero-word .65s calc(.06s + var(--word)*.12s) cubic-bezier(.2,.65,.25,1) both}
+.home-page .hero-visual{animation:jm-hero-image .7s .24s ease-out both}
+.home-page .hero-services{animation:jm-hero-enter .5s .5s ease-out both}
+@keyframes jm-hero-word{from{opacity:0;transform:translateY(14px);clip-path:inset(0 -8% 100% -8%)}to{opacity:1;transform:none;clip-path:inset(0 -8% 0 -8%)}}
+@keyframes jm-hero-image{from{opacity:0}to{opacity:1}}
+@keyframes jm-hero-enter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){
+ .header-emblem::before,.header-emblem::after,.header-emblem .brand-glint{animation:none;opacity:0}
+ .home-page .hero-word,.home-page .hero-visual,.home-page .hero-services{animation:none;opacity:1;transform:none;clip-path:none}
+}
