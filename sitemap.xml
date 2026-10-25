@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://julianmuehl.de/</loc>
-    <lastmod>2026-07-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
-  </url>
+  <url><loc>https://julianmuehl.de/</loc></url>
+  <url><loc>https://julianmuehl.de/kapitalanlage/</loc></url>
+  <url><loc>https://julianmuehl.de/finanzierung/</loc></url>
+  <url><loc>https://julianmuehl.de/ueber-mich/</loc></url>
+  <url><loc>https://julianmuehl.de/partner/</loc></url>
+  <url><loc>https://julianmuehl.de/partner/kooperationspartner/</loc></url>
+  <url><loc>https://julianmuehl.de/partner/objektgeber/</loc></url>
+  <url><loc>https://julianmuehl.de/kontakt/</loc></url>
+  <url><loc>https://julianmuehl.de/impressum/</loc></url>
+  <url><loc>https://julianmuehl.de/datenschutz/</loc></url>
 </urlset>
