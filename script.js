@@ -53,45 +53,43 @@ function journeyPosition(points,progress){
  }
  return points[0];
 }
-// Independent, gently changing speeds around a common flow. Bounded deviations
-// allow small clusters while limiting the longest empty stretch to <8% of the rail.
-function journeyLightProgress(index,time){
- const seed=Math.sin(index*12.9898+78.233)*43758.5453;
- const offset=.011*((seed-Math.floor(seed))*2-1);
- const amplitude=.0065+(index%4)*.00045,cycles=1+index%3,phase=index*2.3999632297;
- return time+index/24+offset+amplitude*Math.sin(2*Math.PI*cycles*time+phase);
-}
-function journeyLightKeyframes(points,index){
+// Original pre-scroll-report movement (6fa5dce): independent 24–28s laps,
+// original phase offsets and the separate +/-2px sideways drift.
+function journeyOriginalProgress(index,seconds){return ((index/24+Math.sin(index*1.7)*.014+seconds/(24+index%5))%1+1)%1;}
+function journeyOriginalKeys(points,index){
  const transform=progress=>{const p=journeyPosition(points,progress);return `translate3d(${p.x.toFixed(2)}px,${p.y.toFixed(2)}px,0)`;};
- const wrap=value=>((value%1)+1)%1,keys=[];
- let previous=journeyLightProgress(index,0);
- keys.push({transform:transform(wrap(previous)),offset:0});
- for(let sample=1;sample<=112;sample++){
-  const time=sample/112,raw=journeyLightProgress(index,time);
-  if(Math.floor(raw)>Math.floor(previous)){
-   const boundary=Math.floor(raw);let lo=(sample-1)/112,hi=time;
-   for(let k=0;k<32;k++){const mid=(lo+hi)/2;if(journeyLightProgress(index,mid)<boundary)lo=mid;else hi=mid;}
-   const offset=(lo+hi)/2;
-   // Two keyframes at one instant wrap to the start without crossing the page.
-   keys.push({transform:transform(1),offset},{transform:transform(0),offset});
-  }
-  keys.push({transform:transform(wrap(raw)),offset:time});previous=raw;
+ const phase=journeyOriginalProgress(index,0),crossing=1-phase,keys=[];
+ for(let sample=0;sample<=112;sample++){
+  const offset=sample/112;
+  if(sample&&crossing>(sample-1)/112&&crossing<=offset){keys.push({transform:transform(1),offset:crossing},{transform:transform(0),offset:crossing});}
+  keys.push({transform:transform((phase+offset)%1),offset});
  }
  return keys;
 }
+function journeyDriftKeys(index,vertical){return Array.from({length:65},(_,k)=>{
+ const drift=Math.sin(2*Math.PI*k/64+index)*2;
+ return {transform:`translate3d(${vertical?drift.toFixed(3):0}px,${vertical?0:drift.toFixed(3)}px,0)`,offset:k/64};
+});}
+// Five extra lights roam within the five sections; none of those sections goes dark.
+function journeySectionKeys(points,index){return Array.from({length:97},(_,k)=>{
+ const f=.5+.28*Math.sin(2*Math.PI*k/96+index*1.618),a=points[index],b=points[index+1];
+ return {transform:`translate3d(${(a.x+(b.x-a.x)*f).toFixed(2)}px,${(a.y+(b.y-a.y)*f).toFixed(2)}px,0)`,offset:k/96};
+});}
 function createJourneyOrbit(timeline,index){
  const frame=timeline.parentElement;if(!frame.classList.contains('journey-frame'))return;
  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','journey-orbit');svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');
  const rail=document.createElementNS('http://www.w3.org/2000/svg','path');rail.setAttribute('class','journey-orbit-rail');rail.setAttribute('fill','none');svg.append(rail);
  const layer=document.createElement('div');layer.className='journey-lights';layer.style.visibility='hidden';layer.setAttribute('aria-hidden','true');
  const makeLight=i=>{
-  const el=document.createElement('span');el.className='journey-light';
-  const diameter=2.4+(i%5)*.64;el.style.width=`${diameter}px`;el.style.height=`${diameter}px`;el.style.marginLeft=el.style.marginTop=`${-diameter/2}px`;
-  el.style.opacity=String(.5+(i%4)*.13);layer.append(el);return el;
+  const carrier=document.createElement('span');carrier.className='journey-carrier';
+  const dot=document.createElement('span');dot.className='journey-light';
+  const diameter=2.4+(i%5)*.64;dot.style.width=`${diameter}px`;dot.style.height=`${diameter}px`;dot.style.marginLeft=dot.style.marginTop=`${-diameter/2}px`;
+  dot.style.opacity=String(.5+(i%4)*.13);dot.style.background=i%3===0?'var(--cashmere)':'var(--gold)';
+  carrier.append(dot);layer.append(carrier);return {carrier,dot};
  };
- const particles=Array.from({length:24},(_,i)=>makeLight(i));frame.prepend(svg,layer);
+ const particles=Array.from({length:29},(_,i)=>makeLight(i));frame.prepend(svg,layer);
  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
- const duration=28000,origin=performance.now();let animations=[],signature='',scheduled=false;
+ const origin=performance.now();let animations=[],signature='',scheduled=false;
  const transform=point=>`translate3d(${point.x.toFixed(2)}px,${point.y.toFixed(2)}px,0)`;
  const sync=()=>animations.forEach(animation=>{if(document.hidden)animation.pause();else animation.play();});
  const update=()=>{
@@ -104,14 +102,17 @@ function createJourneyOrbit(timeline,index){
   const lengths=points.slice(1).map((p,i)=>Math.hypot(p.x-points[i].x,p.y-points[i].y)),total=lengths.reduce((a,b)=>a+b,0);if(!total)return;
   svg.setAttribute('viewBox',`0 0 ${box.width} ${box.height}`);rail.setAttribute('d',journeyPath(points));
   animations.forEach(animation=>animation.cancel());animations=[];
-  // Each light has its own irregular path timing; scrolling never changes its phase.
-  const elapsed=performance.now()-origin;
-  particles.forEach((el,i)=>{
-   const raw=journeyLightProgress(i,0),phase=((raw%1)+1)%1;
-   el.style.transform=transform(journeyPosition(points,phase));
-   if(!reduced.matches&&typeof el.animate==='function'){
-    const animation=el.animate(journeyLightKeyframes(points,i),{duration,iterations:Infinity,easing:'linear'});
-    animation.currentTime=elapsed;animations.push(animation);
+  const elapsed=performance.now()-origin,vertical=Math.abs(points.at(-1).y-points[0].y)>Math.abs(points.at(-1).x-points[0].x);
+  particles.forEach(({carrier,dot},i)=>{
+   const section=i-24;
+   const keys=i<24?journeyOriginalKeys(points,i):journeySectionKeys(points,section);
+   const duration=i<24?(24+i%5)*1000:(23+section*3)*1000;
+   carrier.style.transform=keys[0].transform;
+   const drift=journeyDriftKeys(i,vertical);dot.style.transform=drift[0].transform;
+   if(!reduced.matches&&typeof carrier.animate==='function'){
+    const movement=carrier.animate(keys,{duration,iterations:Infinity,easing:'linear'});
+    const sway=dot.animate(drift,{duration:Math.PI*4000,iterations:Infinity,easing:'linear'});
+    movement.currentTime=sway.currentTime=elapsed;animations.push(movement,sway);
    }
   });
   layer.style.visibility='visible';timeline.classList.add('has-orbit');sync();

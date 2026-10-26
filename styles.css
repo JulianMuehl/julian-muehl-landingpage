@@ -303,7 +303,7 @@ header.header .menu-toggle{display:none}
  .home-page .hero-word,.home-page .hero-visual,.home-page .hero-services{animation:none;opacity:1;transform:none;clip-path:none}
 }
 
-/* Instagram webview: compositor transforms, independent organic light motion. */
+/* Original independent motion on compositor carriers, unaffected by scroll. */
 .journey-lights{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden}
 .journey-light{position:absolute;left:0;top:0;display:block;border-radius:50%;background:#ead9c9;box-shadow:0 0 5px 2px #c7a35e99,0 0 12px 4px #c7a35e30;will-change:transform}
 .journey-light:nth-child(3n){background:#c7a35e}
@@ -320,3 +320,6 @@ header.header .menu-toggle{display:none}
  .journey-light{will-change:auto}
  header.header .menu-toggle::after,header.header .menu-toggle .menu-lines{animation:none!important}
 }
+
+.journey-carrier{position:absolute;left:0;top:0;width:0;height:0;will-change:transform}
+@media(prefers-reduced-motion:reduce){.journey-carrier{will-change:auto}}
