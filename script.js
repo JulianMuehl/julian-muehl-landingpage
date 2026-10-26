@@ -53,18 +53,43 @@ function journeyPosition(points,progress){
  }
  return points[0];
 }
+// Independent, gently changing speeds around a common flow. Bounded deviations
+// allow small clusters while limiting the longest empty stretch to <8% of the rail.
+function journeyLightProgress(index,time){
+ const seed=Math.sin(index*12.9898+78.233)*43758.5453;
+ const offset=.011*((seed-Math.floor(seed))*2-1);
+ const amplitude=.0065+(index%4)*.00045,cycles=1+index%3,phase=index*2.3999632297;
+ return time+index/24+offset+amplitude*Math.sin(2*Math.PI*cycles*time+phase);
+}
+function journeyLightKeyframes(points,index){
+ const transform=progress=>{const p=journeyPosition(points,progress);return `translate3d(${p.x.toFixed(2)}px,${p.y.toFixed(2)}px,0)`;};
+ const wrap=value=>((value%1)+1)%1,keys=[];
+ let previous=journeyLightProgress(index,0);
+ keys.push({transform:transform(wrap(previous)),offset:0});
+ for(let sample=1;sample<=112;sample++){
+  const time=sample/112,raw=journeyLightProgress(index,time);
+  if(Math.floor(raw)>Math.floor(previous)){
+   const boundary=Math.floor(raw);let lo=(sample-1)/112,hi=time;
+   for(let k=0;k<32;k++){const mid=(lo+hi)/2;if(journeyLightProgress(index,mid)<boundary)lo=mid;else hi=mid;}
+   const offset=(lo+hi)/2;
+   // Two keyframes at one instant wrap to the start without crossing the page.
+   keys.push({transform:transform(1),offset},{transform:transform(0),offset});
+  }
+  keys.push({transform:transform(wrap(raw)),offset:time});previous=raw;
+ }
+ return keys;
+}
 function createJourneyOrbit(timeline,index){
  const frame=timeline.parentElement;if(!frame.classList.contains('journey-frame'))return;
  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','journey-orbit');svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');
  const rail=document.createElementNS('http://www.w3.org/2000/svg','path');rail.setAttribute('class','journey-orbit-rail');rail.setAttribute('fill','none');svg.append(rail);
  const layer=document.createElement('div');layer.className='journey-lights';layer.style.visibility='hidden';layer.setAttribute('aria-hidden','true');
- const makeLight=(i,fixed)=>{
-  const el=document.createElement('span');el.className=fixed?'journey-light journey-light-fixed':'journey-light';
-  const diameter=fixed?2.4:2.4+(i%5)*.64;el.style.width=`${diameter}px`;el.style.height=`${diameter}px`;el.style.marginLeft=el.style.marginTop=`${-diameter/2}px`;
-  el.style.opacity=fixed?'.24':String(.5+(i%4)*.13);layer.append(el);return el;
+ const makeLight=i=>{
+  const el=document.createElement('span');el.className='journey-light';
+  const diameter=2.4+(i%5)*.64;el.style.width=`${diameter}px`;el.style.height=`${diameter}px`;el.style.marginLeft=el.style.marginTop=`${-diameter/2}px`;
+  el.style.opacity=String(.5+(i%4)*.13);layer.append(el);return el;
  };
- const particles=Array.from({length:24},(_,i)=>makeLight(i,false));
- const fixed=Array.from({length:16},(_,i)=>makeLight(i,true));frame.prepend(svg,layer);
+ const particles=Array.from({length:24},(_,i)=>makeLight(i));frame.prepend(svg,layer);
  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
  const duration=28000,origin=performance.now();let animations=[],signature='',scheduled=false;
  const transform=point=>`translate3d(${point.x.toFixed(2)}px,${point.y.toFixed(2)}px,0)`;
@@ -77,18 +102,16 @@ function createJourneyOrbit(timeline,index){
   const next=JSON.stringify([Math.round(box.width),Math.round(box.height),points.map(p=>[Math.round(p.x),Math.round(p.y)]),reduced.matches]);
   if(next===signature)return;signature=next;
   const lengths=points.slice(1).map((p,i)=>Math.hypot(p.x-points[i].x,p.y-points[i].y)),total=lengths.reduce((a,b)=>a+b,0);if(!total)return;
-  const keys=points.map((point,i)=>({transform:transform(point),offset:i?lengths.slice(0,i).reduce((a,b)=>a+b,0)/total:0}));
   svg.setAttribute('viewBox',`0 0 ${box.width} ${box.height}`);rail.setAttribute('d',journeyPath(points));
-  fixed.forEach((el,i)=>{el.style.transform=transform(journeyPosition(points,(i+.5)/fixed.length));});
   animations.forEach(animation=>animation.cancel());animations=[];
-  // Equal spacing and a shared speed prevent all lights gathering at one end.
+  // Each light has its own irregular path timing; scrolling never changes its phase.
   const elapsed=performance.now()-origin;
   particles.forEach((el,i)=>{
-   const phase=i/particles.length;
+   const raw=journeyLightProgress(i,0),phase=((raw%1)+1)%1;
    el.style.transform=transform(journeyPosition(points,phase));
    if(!reduced.matches&&typeof el.animate==='function'){
-    const animation=el.animate(keys,{duration,iterations:Infinity,easing:'linear'});
-    animation.currentTime=elapsed+phase*duration;animations.push(animation);
+    const animation=el.animate(journeyLightKeyframes(points,i),{duration,iterations:Infinity,easing:'linear'});
+    animation.currentTime=elapsed;animations.push(animation);
    }
   });
   layer.style.visibility='visible';timeline.classList.add('has-orbit');sync();
