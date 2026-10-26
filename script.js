@@ -55,50 +55,48 @@ function journeyPosition(points,progress){
 }
 function createJourneyOrbit(timeline,index){
  const frame=timeline.parentElement;if(!frame.classList.contains('journey-frame'))return;
- const make=(tag,attrs={})=>{const el=document.createElementNS('http://www.w3.org/2000/svg',tag);Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,String(v)));return el;};
- const svg=make('svg',{'class':'journey-orbit','aria-hidden':'true',focusable:'false'});svg.style.visibility='hidden';
- const defs=make('defs'),filter=make('filter',{id:`journey-glow-${index}`,x:'-200%',y:'-200%',width:'500%',height:'500%'});
- filter.append(make('feGaussianBlur',{stdDeviation:'2.4'}));defs.append(filter);svg.append(defs);
- const rail=make('path',{'class':'journey-orbit-rail',fill:'none'});svg.append(rail);
- const particles=Array.from({length:24},(_,i)=>{
-  const group=make('g',{'class':'journey-particle'}),radius=1.2+(i%5)*.32;
-  group.append(make('circle',{r:5+(i%4)*1.5,opacity:.12+(i%3)*.035,fill:'var(--gold)',filter:`url(#journey-glow-${index})`}));
-  group.append(make('circle',{r:radius,opacity:.5+(i%4)*.13,fill:i%3===0?'var(--cashmere)':'var(--gold)'}));
-  svg.append(group);return group;
- });frame.prepend(svg);
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','journey-orbit');svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');
+ const rail=document.createElementNS('http://www.w3.org/2000/svg','path');rail.setAttribute('class','journey-orbit-rail');rail.setAttribute('fill','none');svg.append(rail);
+ const layer=document.createElement('div');layer.className='journey-lights';layer.style.visibility='hidden';layer.setAttribute('aria-hidden','true');
+ const makeLight=(i,fixed)=>{
+  const el=document.createElement('span');el.className=fixed?'journey-light journey-light-fixed':'journey-light';
+  const diameter=fixed?2.4:2.4+(i%5)*.64;el.style.width=`${diameter}px`;el.style.height=`${diameter}px`;el.style.marginLeft=el.style.marginTop=`${-diameter/2}px`;
+  el.style.opacity=fixed?'.24':String(.5+(i%4)*.13);layer.append(el);return el;
+ };
+ const particles=Array.from({length:24},(_,i)=>makeLight(i,false));
+ const fixed=Array.from({length:16},(_,i)=>makeLight(i,true));frame.prepend(svg,layer);
  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
- let points=[],visible=true,animation=0,scheduled=false,epoch=null,lastDraw=0;
- const draw=seconds=>{
-  if(points.length<2)return;
-  const vertical=Math.abs(points.at(-1).y-points[0].y)>Math.abs(points.at(-1).x-points[0].x);
-  particles.forEach((particle,i)=>{
-   const progress=((i/24+Math.sin(i*1.7)*.014+seconds/(24+i%5))%1+1)%1;
-   const point=journeyPosition(points,progress),drift=Math.sin(seconds*.5+i)*2;
-   if(vertical)point.x+=drift;else point.y+=drift;
-   particle.setAttribute('transform',`translate(${point.x.toFixed(2)} ${point.y.toFixed(2)})`);
-  });
- };
- const animate=now=>{
-  animation=0;if(!visible||reduced.matches||points.length<2)return;
-  if(epoch===null)epoch=now;
-  if(now-lastDraw>=32){draw((now-epoch)/1000);lastDraw=now;}
-  animation=requestAnimationFrame(animate);
- };
- const run=()=>{
-  if(!visible||reduced.matches){if(animation)cancelAnimationFrame(animation);animation=0;if(reduced.matches)draw(0);return;}
-  if(!animation&&points.length>1)animation=requestAnimationFrame(animate);
- };
+ const duration=28000,origin=performance.now();let animations=[],signature='',scheduled=false;
+ const transform=point=>`translate3d(${point.x.toFixed(2)}px,${point.y.toFixed(2)}px,0)`;
+ const sync=()=>animations.forEach(animation=>{if(document.hidden)animation.pause();else animation.play();});
  const update=()=>{
   const box=frame.getBoundingClientRect(),markers=[...timeline.querySelectorAll('.timeline-number')];
-  if(markers.length<2||!box.width||!box.height){svg.style.visibility='hidden';return;}
-  points=markers.map(marker=>{const r=marker.getBoundingClientRect();return {x:r.left+r.width/2-box.left,y:r.top+r.height/2-box.top};});
+  // Keep the last painted lights if a webview temporarily reports a zero-size frame.
+  if(markers.length<2||!box.width||!box.height)return;
+  const points=markers.map(marker=>{const r=marker.getBoundingClientRect();return {x:r.left+r.width/2-box.left,y:r.top+r.height/2-box.top};});
+  const next=JSON.stringify([Math.round(box.width),Math.round(box.height),points.map(p=>[Math.round(p.x),Math.round(p.y)]),reduced.matches]);
+  if(next===signature)return;signature=next;
+  const lengths=points.slice(1).map((p,i)=>Math.hypot(p.x-points[i].x,p.y-points[i].y)),total=lengths.reduce((a,b)=>a+b,0);if(!total)return;
+  const keys=points.map((point,i)=>({transform:transform(point),offset:i?lengths.slice(0,i).reduce((a,b)=>a+b,0)/total:0}));
   svg.setAttribute('viewBox',`0 0 ${box.width} ${box.height}`);rail.setAttribute('d',journeyPath(points));
-  draw(0);svg.style.visibility='visible';timeline.classList.add('has-orbit');run();
+  fixed.forEach((el,i)=>{el.style.transform=transform(journeyPosition(points,(i+.5)/fixed.length));});
+  animations.forEach(animation=>animation.cancel());animations=[];
+  // Equal spacing and a shared speed prevent all lights gathering at one end.
+  const elapsed=performance.now()-origin;
+  particles.forEach((el,i)=>{
+   const phase=i/particles.length;
+   el.style.transform=transform(journeyPosition(points,phase));
+   if(!reduced.matches&&typeof el.animate==='function'){
+    const animation=el.animate(keys,{duration,iterations:Infinity,easing:'linear'});
+    animation.currentTime=elapsed+phase*duration;animations.push(animation);
+   }
+  });
+  layer.style.visibility='visible';timeline.classList.add('has-orbit');sync();
  };
  const schedule=()=>{if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;update();});};
  if(typeof ResizeObserver!=='undefined')new ResizeObserver(schedule).observe(frame);
- if(typeof IntersectionObserver!=='undefined')new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;run();}).observe(frame);
- timeline.addEventListener('toggle',schedule,true);window.addEventListener('resize',schedule);reduced.addEventListener('change',run);
+ // No IntersectionObserver start/stop and no per-frame JS: scrolling must not reset motion.
+ timeline.addEventListener('toggle',schedule,true);window.addEventListener('resize',schedule);reduced.addEventListener('change',schedule);document.addEventListener('visibilitychange',sync);
  if(document.fonts)document.fonts.ready.then(schedule);schedule();
 }
 document.querySelectorAll('.timeline').forEach(createJourneyOrbit);
