@@ -70,11 +70,14 @@ function journeyDriftKeys(index,vertical){return Array.from({length:65},(_,k)=>{
  const drift=Math.sin(2*Math.PI*k/64+index)*2;
  return {transform:`translate3d(${vertical?drift.toFixed(3):0}px,${vertical?0:drift.toFixed(3)}px,0)`,offset:k/64};
 });}
-// Five extra lights roam within the five sections; none of those sections goes dark.
-function journeySectionKeys(points,index){return Array.from({length:97},(_,k)=>{
- const f=.5+.28*Math.sin(2*Math.PI*k/96+index*1.618),a=points[index],b=points[index+1];
- return {transform:`translate3d(${(a.x+(b.x-a.x)*f).toFixed(2)}px,${(a.y+(b.y-a.y)*f).toFixed(2)}px,0)`,offset:k/96};
-});}
+// Extra lights only move forward within their section, then wrap instantly.
+function journeySectionKeys(points,index){
+ const a=points[index],b=points[index+1],phase=(index*.38196601125)%1,crossing=1-phase;
+ const position=f=>`translate3d(${(a.x+(b.x-a.x)*f).toFixed(2)}px,${(a.y+(b.y-a.y)*f).toFixed(2)}px,0)`;
+ return [{transform:position(.22+.56*phase),offset:0},
+  {transform:position(.78),offset:crossing},{transform:position(.22),offset:crossing},
+  {transform:position(.22+.56*phase),offset:1}];
+}
 function createJourneyOrbit(timeline,index){
  const frame=timeline.parentElement;if(!frame.classList.contains('journey-frame'))return;
  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','journey-orbit');svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');
