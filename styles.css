@@ -344,3 +344,7 @@ header.header .menu-toggle{display:none}
 @media(min-width:1101px){.process .timeline>li>p{min-height:96px}}
 @media(min-width:1101px) and (max-width:1300px){.process .timeline>li>p{min-height:118px}}
 @media(min-width:1101px) and (max-width:1199px){.process .timeline>li>p{min-height:142px}}
+/* Breitere Inhaltsfläche auf großen Bildschirmen 06.11.2026 */
+@media(min-width:1600px){.wrap:not(.footer):not(.header):not(.home-page .hero){width:min(1340px,calc(100% - 140px))}header.header.wrap{padding-inline:max(35px,calc((100vw - 1410px)/2))}}
+@media(min-width:1600px){.home-page .hero{padding-left:calc((100vw - 1340px)/2)}}
+@media(min-width:1600px){.process .timeline>li>p{min-height:72px}}
