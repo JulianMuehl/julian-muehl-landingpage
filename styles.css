@@ -329,3 +329,7 @@ header.header .menu-toggle{display:none}
 .partner-grid article>p{max-width:480px;font-size:15px;line-height:1.8;color:#5e4e49;margin-bottom:20px}
 .partner-collaboration{padding-block:0 70px}.partner-collaboration h2{font-size:43px;line-height:1.08;margin-top:22px}.partner-collaboration ol{list-style:decimal-leading-zero;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:45px;margin:35px 0 0;padding-left:28px}.partner-collaboration li{padding:22px 0 0 8px;border-top:1px solid var(--rule)}.partner-collaboration li::marker{color:var(--wine);font-size:12px}.partner-collaboration h3{font:500 29px/1.15 PersonalSerif,Georgia,serif}.partner-collaboration li p{font-size:15px;line-height:1.8;color:#5e4e49;margin-top:16px}
 @media(max-width:740px){.partner-collaboration{padding-bottom:45px}.partner-collaboration h2{font-size:36px}.partner-collaboration ol{grid-template-columns:1fr;gap:26px}.partner-collaboration li p,.partner-grid article>p,.form-entry p{font-size:14px}}
+/* Schriftgrößen 06.11.2026: Hinweiszeile, Menü, Startbereich */
+.process-heading>p.process-hint{font-size:15px;opacity:.88;line-height:1.5}
+.hero-break{display:none}
+@media(min-width:1101px){header.header .menu a{font-size:14.5px}.hero h1{font-size:clamp(49px,5.2vw,88px)}.hero-services{font-size:19px}.hero-break{display:inline}}
